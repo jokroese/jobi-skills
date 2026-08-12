@@ -21,7 +21,7 @@ script symlinks each skill into every agent it finds, so there is one copy on
 disk and nothing to keep in sync:
 
 ```bash
-git clone https://github.com/<you>/jobi-skills.git
+git clone https://github.com/jokroese/jobi-skills.git
 cd jobi-skills
 ./scripts/install.sh
 ```
@@ -61,16 +61,28 @@ For anything not listed, or for project-scoped installs:
 `~/.agents/skills` is the vendor-neutral location some tools read. The script
 links there if `~/.agents` exists.
 
-### Claude Desktop and Cowork
+### Claude Code
 
-These do **not** read `~/.claude/skills` — that path is Claude Code (the CLI).
-The desktop app loads skills from installed plugins and from skills saved to
-your account, so install this repo as a plugin instead:
+Symlinks in `~/.claude/skills` work, but installing as a plugin keeps it
+updatable. From the Claude Code prompt, in any directory:
 
 ```
-/plugin marketplace add <you>/jobi-skills
+/plugin marketplace add jokroese/jobi-skills
 /plugin install jobi-skills
 ```
+
+### Claude Desktop and Cowork
+
+These do **not** read `~/.claude/skills` — that path is Claude Code (the CLI),
+and `/plugin` is a Claude Code command, not a desktop one. The desktop app
+loads skills from installed plugins and from skills saved to your account.
+Install through the UI:
+
+1. Open the **Cowork** tab, then **Customize** in the left sidebar
+2. Go to **Plugins**
+3. Under **Personal plugins**, click **+** → **Add marketplace**
+4. Enter `jokroese/jobi-skills`
+5. Install the `jobi-skills` plugin, then start a new session
 
 ### Without the script
 
