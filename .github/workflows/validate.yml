@@ -1,0 +1,39 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate SKILL.md files
+        run: python3 scripts/validate.py
+
+      - name: Shellcheck bundled scripts
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          find . -name '*.sh' -not -path './.git/*' -print0 \
+            | xargs -0 -r shellcheck --shell=sh
+
+      - name: Install script is idempotent
+        run: |
+          set -eux
+          ./scripts/install.sh --dry-run
+          ./scripts/install.sh --target "$RUNNER_TEMP/agent-skills"
+          ./scripts/install.sh --target "$RUNNER_TEMP/agent-skills"
+          test -L "$RUNNER_TEMP/agent-skills/git-commit"
+          test -f "$RUNNER_TEMP/agent-skills/git-commit/SKILL.md"
+          # A second run must not have created backup copies.
+          test -z "$(find "$RUNNER_TEMP/agent-skills" -maxdepth 1 -name '*.backup-*')"
+          ./scripts/install.sh --target "$RUNNER_TEMP/agent-skills" --uninstall
+          test ! -e "$RUNNER_TEMP/agent-skills/git-commit"

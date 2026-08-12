@@ -1,0 +1,19 @@
+# Install script artefacts
+*.backup-*
+
+# Skill development workspaces (eval runs, iteration outputs)
+*-workspace/
+feedback.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+*.swp

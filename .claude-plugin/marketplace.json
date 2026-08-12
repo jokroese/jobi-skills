@@ -1,0 +1,14 @@
+{
+  "name": "jobi-skills",
+  "owner": {
+    "name": "jobi",
+    "email": "skills@jobi.is"
+  },
+  "plugins": [
+    {
+      "name": "jobi-skills",
+      "source": "./",
+      "description": "Portable Agent Skills — reusable, provider-agnostic instructions for AI coding agents."
+    }
+  ]
+}

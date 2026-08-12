@@ -1,0 +1,60 @@
+{
+  "skill_name": "git-commit",
+  "evals": [
+    {
+      "id": 0,
+      "name": "bugfix-with-nonobvious-cause",
+      "prompt": "I just fixed a thing in our API — refresh tokens were staying valid after someone changed their password, so if an attacker had a session they kept it. Fix compares the token's iat against password_changed_at on the user record. Changes are staged. Give me a commit message. Repo uses conventional commits and the issue is #482.",
+      "expected_output": "A conventional commit with type fix, an appropriate scope, imperative subject under 72 chars, and a body explaining WHY (the security consequence and the rejected alternative) rather than restating the diff. Closes #482 footer.",
+      "files": [],
+      "assertions": [
+        "Subject line uses the 'fix' type prefix",
+        "Subject line is 72 characters or fewer",
+        "Subject line is in imperative mood and has no trailing full stop",
+        "Includes a body separated from the subject by a blank line",
+        "Body explains the security consequence rather than restating the diff",
+        "Includes a 'Closes #482' footer",
+        "Does not run 'git commit' or 'git add'"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "matches-non-conventional-house-style",
+      "prompt": "write me a commit message for this. the log is at /tmp/eval-repo-plain if you want to look at how we normally write them",
+      "expected_output": "Detects from git log that the repo does NOT use type prefixes, and writes a plain imperative subject matching house style instead of imposing 'feat:'/'fix:'. Should explain that it followed the existing convention.",
+      "files": [],
+      "assertions": [
+        "Inspects recent git history before writing the message",
+        "Produced subject has no conventional-commit type prefix",
+        "Subject is in imperative mood",
+        "Explicitly notes that it matched the repository's existing style"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "unrelated-changes-should-split",
+      "prompt": "ok can you commit all this for me",
+      "expected_output": "Working tree contains unrelated concerns (a bug fix, a dependency bump, drive-by formatting). Should propose splitting into separate commits with the files for each, and should NOT run git add -A or git commit unilaterally.",
+      "files": [],
+      "assertions": [
+        "Identifies that the working tree contains unrelated concerns",
+        "Proposes a specific split with the files belonging to each commit",
+        "Does not run 'git add -A' or 'git commit -a'",
+        "Asks the user to confirm the split before staging"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "breaking-change",
+      "prompt": "I've changed all our API endpoints to return ISO 8601 timestamp strings instead of unix epoch ints. staged and ready. commit message please",
+      "expected_output": "Conventional commit marking the break both with '!' in the subject and a BREAKING CHANGE footer describing what breaks and what clients must do.",
+      "files": [],
+      "assertions": [
+        "Subject line includes '!' before the colon",
+        "Includes an uppercase 'BREAKING CHANGE:' footer",
+        "The footer states both what breaks and what consumers must do",
+        "Subject line is 72 characters or fewer"
+      ]
+    }
+  ]
+}
