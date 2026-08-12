@@ -11,7 +11,11 @@
     "skills",
     "agent-skills",
     "git",
-    "conventional-commits"
+    "conventional-commits",
+    "cad",
+    "build123d",
+    "3d-printing",
+    "parametric-design"
   ],
   "skills": "./skills"
 }

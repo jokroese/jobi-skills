@@ -1,0 +1,76 @@
+{
+  "skill_name": "build123d",
+  "evals": [
+    {
+      "id": 0,
+      "name": "verifies-rather-than-asserting",
+      "prompt": "Design me an L-shaped bracket in build123d. 40 mm wide, 4 mm thick, both legs 35 mm, two M3 clearance holes in each leg on a 24 mm pitch. I'm printing it in PETG.",
+      "expected_output": "A parametric model file with a named parameter block, plus evidence the model was actually executed: measured bounding box, volume, solid count, and renders that were looked at. Should not hand over untested code as if it were finished.",
+      "files": [],
+      "assertions": [
+        "Writes the model to a file rather than only printing code in the reply",
+        "Dimensions are named constants or dataclass fields, not literals buried in the geometry",
+        "Runs the model (via scripts/inspect_part.py or equivalent) instead of only writing it",
+        "Reports measured values - bounding box and volume - taken from the run, not estimated",
+        "Confirms the part is a single solid",
+        "Views the rendered images, or states plainly that it could not run and the model is unverified"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "catches-silently-floating-feature",
+      "prompt": "This build123d part is meant to have a cylindrical boss on top of the plate for a heat-set insert, but something is off when I slice it. Can you check it?\n\n```python\nfrom build123d import *\n\nwith BuildPart() as part:\n    Box(40, 40, 4)\n    with BuildSketch(Plane.XY.offset(4)):\n        Circle(4)\n    extrude(amount=6)\n\nresult = part.part\n```",
+      "expected_output": "Identifies that Box is centred, so its top face is at z=2 and the boss sketch at z=4 leaves the boss floating 2 mm above the plate as a second disjoint solid. Fixes it with align=(Align.CENTER, Align.CENTER, Align.MIN) or by offsetting to 2, and re-runs to confirm one solid.",
+      "files": [],
+      "assertions": [
+        "Diagnoses that Box is centred by default, putting the top face at z=2 rather than z=4",
+        "Identifies the consequence: the boss is disjoint and the part is two solids",
+        "Cites the solid count or volume as evidence rather than only inspecting the code by eye",
+        "Fixes it by aligning the box or correcting the plane offset, not by moving the boss arbitrarily",
+        "Re-runs after the fix and confirms a single solid"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "clearances-are-named-not-nominal",
+      "prompt": "I need a two-part enclosure in build123d - a box roughly 70 x 50 x 30 with a lid that sits on it and stays put. 0.4 mm nozzle, PLA.",
+      "expected_output": "A model where the lid-to-body fit is an explicitly named clearance parameter rather than a nominal dimension, wall thickness is justified against the extrusion width, and the bed-contact edges are chamfered. Should say which value to tune if the fit is wrong.",
+      "files": [],
+      "assertions": [
+        "The lid fit clearance is a named constant, not baked into a literal dimension",
+        "The clearance value is in the 0.1-0.3 mm range for a fit that stays put, with a stated reason",
+        "Wall thickness is related to the extrusion width or nozzle diameter rather than picked arbitrarily",
+        "Adds a chamfer on edges that touch the build plate, or explains why not",
+        "Tells the user which single parameter to change if the lid is too tight or too loose"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "reparameterise-and-recheck",
+      "prompt": "Here's my bracket model. Change it from M3 to M4 fasteners.",
+      "expected_output": "Changes the fastener parameters - clearance hole, counterbore or nut dimensions - at the parameter block, checks that dependent features still have enough material around them, and re-runs the verification rather than assuming the edit was safe.",
+      "files": [],
+      "assertions": [
+        "Edits the parameter block rather than hunting for numbers in the geometry",
+        "Updates every dependent fastener dimension, not just the hole diameter",
+        "Uses M4 values that are correct for a clearance fit, around 4.3-4.5 mm",
+        "Checks that the larger holes have not eaten into surrounding wall thickness",
+        "Re-runs the model after the change instead of assuming it still builds"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "selects-topologically-not-by-index",
+      "prompt": "In build123d, how do I chamfer just the four holes on the top face of a plate? I've been doing part.edges()[12:16] and it keeps chamfering the wrong thing when I change the plate size.",
+      "expected_output": "Explains that index-based selection is positional and reorders whenever the geometry changes, and replaces it with a topological narrowing: select the top face by sorting on Axis.Z, then filter its edges by GeomType.CIRCLE.",
+      "files": [],
+      "assertions": [
+        "Explains why bare indices break - edge ordering is not stable across parameter changes",
+        "Selects the top face with sort_by(Axis.Z) or group_by(Axis.Z) rather than an index",
+        "Filters the circular edges with filter_by(GeomType.CIRCLE)",
+        "Gives runnable code rather than only prose",
+        "Mentions that fillets and chamfers belong at the end of the model"
+      ]
+    }
+  ]
+}

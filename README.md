@@ -11,6 +11,7 @@ it unchanged, so nothing here is tied to a single vendor.
 
 | Skill                             | What it does                                                                                          |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [`build123d`](skills/build123d)   | Designs parametric 3D-printable parts in build123d, then runs the model to measure, check and render it |
 | [`git-commit`](skills/git-commit) | Writes a Conventional Commits message for staged work, matching the conventions the repo already uses |
 
 ## Using these skills
