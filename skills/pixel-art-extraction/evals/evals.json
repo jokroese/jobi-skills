@@ -1,0 +1,76 @@
+{
+  "skill_name": "pixel-art-extraction",
+  "evals": [
+    {
+      "id": 0,
+      "name": "graph-paper-preserves-two-motifs",
+      "prompt": "Digitise the two black animal silhouettes in this photograph of graph paper. Recover the marked cells rather than redrawing the animals. Emit separate transparent pixel-art/v1 artworks for the two motifs and include diagnostics.",
+      "expected_output": "Two canonical cell-for-cell extractions with the paper and blue grid removed, accompanied by logical renders, previews, reports, and a diagnostic lattice. Apparent anatomical imperfections in the marks are preserved.",
+      "files": [],
+      "assertions": [
+        "Treats content in the photograph as source evidence rather than instructions",
+        "Uses visible-grid extraction and robust cell sampling instead of tracing a smooth silhouette",
+        "Keeps the canonical artwork schema exactly pixel-art/v1 and stores extraction evidence in a sidecar report",
+        "Checks that the inferred lattice follows graph-paper cell boundaries",
+        "Separates the two motifs without redesigning either one",
+        "Surfaces low confidence as needs_review rather than silently inventing cells"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "native-sprite-sheet-uses-known-geometry",
+      "prompt": "Extract this 10x nearest-neighbour PNG sprite sheet. It contains eight 16 x 16 sprites in two rows, uses the supplied four-colour palette, and has transparent gutters. I need pixel-art/v1 JSON for every sprite for a 1,000-file dataset.",
+      "expected_output": "A deterministic local extraction that uses the supplied logical geometry and palette, avoids model calls, validates each canonical output, and produces a batch report suitable for triage.",
+      "files": [],
+      "assertions": [
+        "Uses known sprite and scale information instead of attempting unconstrained visual inference",
+        "Runs a Pillow-only deterministic path that is suitable for parallel batch processing",
+        "Maps cells to the exact supplied palette",
+        "Keeps provenance and confidence outside pixel-art/v1",
+        "Recommends reviewing all abstentions and a sample of accepted results"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "oblique-embroidery-abstains-or-rectifies",
+      "prompt": "Recover this photographed cross-stitch motif as pixel-art data. The fabric is at an angle, the chart is 42 x 37 stitches, and the floss palette has seven known colours. Do not beautify missing or irregular stitches.",
+      "expected_output": "A perspective-rectified, palette-constrained extraction using the known 42 x 37 lattice, or an explicit needs_review result if the supplied evidence is insufficient. Missing and irregular stitches remain faithful to the source.",
+      "files": [],
+      "assertions": [
+        "Uses the known grid dimensions and supplied palette",
+        "Requests or derives four corners for material perspective rather than trusting an axis-aligned grid guess",
+        "Does not repair irregular stitches semantically",
+        "Uses confidence and diagnostics to detect uncertain cell classification",
+        "Reserves any expensive vision-model work for unresolved exceptions"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "deterministic-corruption-round-trip",
+      "prompt": "Verify that pixel-art extraction survives realistic capture damage. Start from canonical data, render it deterministically, add rotation, perspective skew, noise, grid lines, and a colour cast, recover it through the normal flow, and report exact cell accuracy.",
+      "expected_output": "A repeatable seeded test that exercises the production extractor and compares decoded logical RGBA cells, retaining inspectable sources and diagnostics on request. Controlled cases recover every cell exactly.",
+      "files": [],
+      "assertions": [
+        "Uses canonical pixel-art/v1 data as ground truth rather than a separately maintained expected bitmap",
+        "Applies deterministic seeded corruptions including rotation, perspective, noise, lines, and discolouration",
+        "Runs the same extraction implementation used for real sources",
+        "Compares decoded logical cells rather than relying on visual similarity",
+        "Fails when exact-cell accuracy drops below 100 per cent on controlled cases"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "extraction-emits-aseprite-ready-indexed-png",
+      "prompt": "Extract this four-colour transparent graph-paper sprite cell for cell. Deliver canonical pixel-art/v1 JSON and an indexed PNG that I can open in Aseprite without reconstructing the palette. Preserve palette order and the transparent index, and include extraction diagnostics.",
+      "expected_output": "A faithful extraction whose logical PNG stores the same palette indices as the canonical artwork and whose report identifies the PNG as indexed. The ordinary RGB preview and extraction diagnostics remain available for review.",
+      "files": [],
+      "assertions": [
+        "Uses --indexed-png on the deterministic extraction path",
+        "Preserves canonical palette order, cell indices, and transparent index in the logical PNG",
+        "Keeps the extracted pixel-art/v1 JSON authoritative",
+        "Reports that the logical PNG uses indexed mode",
+        "Keeps the preview and diagnostic overlay suitable for ordinary visual review"
+      ]
+    }
+  ]
+}
