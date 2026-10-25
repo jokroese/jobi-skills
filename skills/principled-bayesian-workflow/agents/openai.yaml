@@ -1,0 +1,4 @@
+interface:
+  display_name: "Principled Bayesian Workflow"
+  short_description: "Build, validate, and report Bayesian analyses"
+  default_prompt: "Use $principled-bayesian-workflow to implement and document a principled Bayesian analysis for this project."
