@@ -1,0 +1,23 @@
+{
+  "skill_name": "normalise-to-markdown",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I OCR'd a scanned report and got this mess, can you turn it into proper markdown? Here's the text:\n\nANNUAL SAFETY RE-\nPORT\n\nExecutive Summary\nThis report covers incidents record-\ned during the 2023 fiscal year across\nall three plant sites.\n\n1 of 4\n\n• Total incidents: 12\n• Lost-time incidents: 2\n• Near misses reported: 34\n\nRecommendations\n1) Increase safety training frequency\n2) Install additional signage in Zone B\n3) Review PPE compliance monthly\n\nANNUAL SAFETY RE-\nPORT\n\n2 of 4\n\nSite Breakdown\nSite     Incidents   Near Misses\nPlant A     5              12\nPlant B     4              15\nPlant C     3              7",
+      "expected_output": "A markdown document with a top-level heading 'Annual Safety Report', rejoined hyphenated words (Re-\\nPORT -> Report, record-\\ned -> recorded), the repeated running header and page-number lines ('ANNUAL SAFETY RE-PORT', '1 of 4', '2 of 4') removed, a proper bullet list for the summary stats, a numbered list for recommendations, and a real markdown table with header row and separator for the site breakdown.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I copied this from a Google Doc into a text file and it lost all its formatting. Can you clean it up into markdown?\n\nProject Kickoff Notes\n\nAttendees\n● Sarah Chen\n● Marcus Diallo\n● Priya Nair\n\nKey Decisions\n● We will use the existing auth service rather than build a new one\n● Launch target is set for Q3, not Q2 as originally discussed\n\nOpen Questions\nWho owns the migration script? Still unresolved as of this meeting.\n\nNext Steps\n1. Marcus to draft the technical spec\n2. Priya to schedule a follow-up with legal\n3. Sarah to update the roadmap doc",
+      "expected_output": "Markdown with '# Project Kickoff Notes' as the title, '## Attendees', '## Key Decisions', '## Open Questions', '## Next Steps' as section headings, bullet lists using '-' (converted from the ● glyph) for Attendees and Key Decisions, and a '1.' ordered list for Next Steps. The Open Questions paragraph stays as prose since it isn't a list.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Here's some text I pasted from a PDF export of a recipe. It's a wall of text with no structure — can you turn it into a clean markdown recipe? \"Grandma's Chili Serves 6 Ingredients 2 lbs ground beef 1 large onion diced 2 cans kidney beans 1 can crushed tomatoes 2 tbsp chili powder Instructions Brown the beef in a large pot over medium heat Add the onion and cook until soft about 5 minutes Stir in the chili powder and cook for 1 minute Add the beans and tomatoes and simmer for 30 minutes\"",
+      "expected_output": "A markdown document with '# Grandma's Chili', a note that it serves 6, an '## Ingredients' section as a bullet list, and an '## Instructions' section as a numbered list — reconstructed from a single unbroken paragraph with no punctuation cues between items, without inventing quantities or steps that weren't in the source.",
+      "files": []
+    }
+  ]
+}
