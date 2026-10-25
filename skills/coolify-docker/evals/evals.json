@@ -1,0 +1,144 @@
+{
+  "skill_name": "coolify-docker",
+  "evals": [
+    {
+      "id": 0,
+      "name": "git-dockerfile",
+      "prompt": "Make this npm TypeScript API Coolify-ready as a Git-backed Application. It has package-lock.json, npm run build emits dist/server.js, npm start invokes node dist/server.js, and GET /healthz is readiness. PORT defaults to 3000 and HOST is configurable. It needs a runtime DATABASE_URL. Prepare files and exact GUI settings; do not deploy.",
+      "expected_output": "A Dockerfile, context exclusions and Application setup matching the supplied runtime.",
+      "files": [],
+      "assertions": [
+        "Uses a locked npm install, a lean production stage and a compatible non-root user.",
+        "Configures 0.0.0.0 and internal port 3000 with a working final-image probe.",
+        "Keeps DATABASE_URL runtime-only and out of image layers.",
+        "Selects Git Dockerfile Application with correct context/path and does not invent a Compose requirement.",
+        "Does not perform a live deployment."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "git-compose",
+      "prompt": "Our Git repository has api/ and worker/ Dockerfiles and deploy/compose.yaml. Deployments should follow the main branch. Add a private PostgreSQL dependency and configure HTTPS for only the API on port 8080 in Coolify. Prepare the configuration.",
+      "expected_output": "A Git-backed Compose Application with repository-relative contexts and per-component routing.",
+      "files": [],
+      "assertions": [
+        "Chooses a Git Compose Application rather than Docker Compose Empty.",
+        "Resolves build contexts relative to the chosen Compose file and explains Base Directory/Compose Location consistently.",
+        "Keeps worker and database private and uses internal DNS for database access.",
+        "Distinguishes domain target port 8080 from the public HTTPS port.",
+        "Defines health checks and volumes in Compose rather than assuming Application GUI overrides."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "shared-service",
+      "prompt": "Package a community-shareable Coolify Service for our published Node API image ghcr.io/example/ledger:1.4.2 and PostgreSQL 17. The API uses PUBLIC_URL, DATABASE_HOST, DATABASE_PORT, DATABASE_NAME, DATABASE_USER and DATABASE_PASSWORD, listens on 3000 and serves /healthz. We want the Service component layout, generated credentials and a generated HTTPS domain. No live instance is available. Write the YAML and installation/update notes.",
+      "expected_output": "A genuine custom Service, distributed independently of the official catalogue.",
+      "files": [],
+      "assertions": [
+        "Uses Docker Compose Empty and explains the Service component layout, not a Git Application.",
+        "Shares secret-free source YAML and explains manual installation and updates without claiming automatic catalogue or URL import.",
+        "Uses matching SERVICE_USER and SERVICE_PASSWORD identifiers for database and API.",
+        "Uses SERVICE_URL for a scheme-bearing PUBLIC_URL and maps the domain to the actual service and internal port.",
+        "Provides synthetic values for local validation and does not claim a live deployment.",
+        "Has no missing local build context or required adjacent files.",
+        "Does not guarantee HTTPS merely from SERVICE_URL; identifies domain/DNS/proxy/TLS prerequisites and checks the resolved scheme."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "magic-parser",
+      "prompt": "Review this Coolify Compose configuration: the my-api service has PUBLIC_URL=${SERVICE_FQDN_MY_API_3000}, SESSION_KEY=${SERVICE_BASE64_64_SESSION_KEY}, DATABASE_PASSWORD=${SERVICE_PASSWORD_DB_PASSWORD}; database has POSTGRES_PASSWORD=${SERVICE_PASSWORD_64_DB}. The app requires a URL with scheme, a Base64-encoded session key and the same DB password. Fix it and explain the GUI implications.",
+      "expected_output": "Correctly scoped and encoded generated values with consistent references.",
+      "files": [],
+      "assertions": [
+        "Uses SERVICE_URL_MY_API_3000 for a URL with scheme and declares it on my-api.",
+        "Uses a single-token credential/random identifier and a real Base64 generator with the required format.",
+        "Shares exactly the same database password reference in both components.",
+        "Notes that changing generated identifiers on an existing installation can create new values and does not rotate an existing database account.",
+        "Verifies generated/domain values in Coolify instead of treating them as plain Docker interpolation."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "private-build-secret",
+      "prompt": "Our Coolify Dockerfile uses ARG NPM_TOKEN then writes it into .npmrc before npm ci. Keep private package installation working, but remove the token from image history. BuildKit availability on the build server is unknown. Production DATABASE_URL is currently available at build time too.",
+      "expected_output": "Secure build-secret handling with explicit transport verification.",
+      "files": [],
+      "assertions": [
+        "Removes secret ARG/ENV and uses a verified BuildKit secret mapping or proposes CI-built image deployment if unsupported.",
+        "Does not promise secure transport while Coolify may fall back to build arguments.",
+        "Makes DATABASE_URL runtime-only.",
+        "Does not print or persist real credentials or equate deleting a secret with removing earlier layers."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "health-and-routing",
+      "prompt": "My Compose Application builds successfully but Coolify says no available server. The node slim image has no curl. The check is curl http://localhost:80/health; the application serves /ready on 8080 and binds 127.0.0.1. The domain targets port 3000. Fix the relevant configuration.",
+      "expected_output": "Evidence-driven corrections across bind address, probe and proxy target.",
+      "files": [],
+      "assertions": [
+        "Uses 0.0.0.0:8080, /ready and a probe executable available in the final image.",
+        "Corrects the receiving service and internal port in domain configuration.",
+        "Keeps Compose health configuration in Compose/image rather than directing use of the standard Application Healthcheck page.",
+        "Does not disable checks or publish a host port as the primary fix."
+      ]
+    },
+    {
+      "id": 6,
+      "name": "stateful-upgrade",
+      "prompt": "Update a community Service from PostgreSQL 17 to 18 and rename database to db while tidying its volumes. It already contains production data. Also regenerate its password. The current mount is database-data:/var/lib/postgresql/data.",
+      "expected_output": "A deliberate migration and credential rotation plan without destructive shortcuts.",
+      "files": [],
+      "assertions": [
+        "Checks upstream image data paths and major-version upgrade procedure instead of a blind tag change.",
+        "Preserves resource/storage identity or explicitly plans a data migration with backup and restore verification.",
+        "Explains that changing POSTGRES_PASSWORD does not update an existing account.",
+        "Does not delete volumes or claim an older app image reverses database changes.",
+        "Distinguishes preparing changes from authorisation to destroy existing data."
+      ]
+    },
+    {
+      "id": 7,
+      "name": "deployment-outcome",
+      "prompt": "Deploy this already-prepared Dockerfile Application to the established staging UUID. The POST /deploy response is HTTP 200 with deployment_uuid dep-123. Later deployment status says finished, but post-deployment migration logs report an error and the HTTPS endpoint returns 503. Is this done? Continue as far as the evidence allows.",
+      "expected_output": "An unsuccessful end-to-end deployment, with focused diagnosis rather than a false success claim.",
+      "files": [],
+      "assertions": [
+        "Does not count HTTP 200 or finished status alone as success.",
+        "Uses the deployment identifier separately from the resource identifier.",
+        "Checks migration outcome, runtime health and public behaviour.",
+        "Avoids repeatedly triggering deployment with unchanged inputs.",
+        "Reports incomplete verification and the concrete failing layer."
+      ]
+    },
+    {
+      "id": 8,
+      "name": "gui-drift",
+      "prompt": "Our existing Coolify Service has a manually set LOG_LEVEL=debug, locked secrets and a domain changed in the component GUI. The new shared YAML changes the LOG_LEVEL default to info. Apply the new version without losing the operator settings; the template repository says upgrades are automatic.",
+      "expected_output": "An update preserving instance configuration and correcting the claimed template lifecycle.",
+      "files": [],
+      "assertions": [
+        "Compares saved source and effective Compose before applying changes.",
+        "Does not overwrite locked secrets or bulk-replace the environment variable set.",
+        "Recognises that the saved LOG_LEVEL may survive a source default change.",
+        "Updates the Service-owned YAML explicitly and does not claim automatic source/template sync.",
+        "Reviews managed generated URL values after domain changes."
+      ]
+    },
+    {
+      "id": 9,
+      "name": "worker-image",
+      "prompt": "CI already publishes our queue worker image by digest. Add it to Coolify as an Application; it consumes QUEUE_URL, writes no local data and has no HTTP listener. Prepare a deployment procedure.",
+      "expected_output": "A Docker Image Application with workload-specific verification.",
+      "files": [],
+      "assertions": [
+        "Chooses Docker Image Application and checks registry access and architecture.",
+        "Does not invent a public domain, HTTP health endpoint or Compose stack.",
+        "Sets QUEUE_URL as runtime configuration and defines a meaningful non-HTTP verification.",
+        "Tracks the deployed digest and a usable recovery reference."
+      ]
+    }
+  ]
+}

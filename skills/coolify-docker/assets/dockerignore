@@ -1,0 +1,14 @@
+.git
+node_modules
+coverage
+npm-debug.log*
+.env
+.env.*
+!.env.example
+.npmrc
+*.pem
+*.key
+.DS_Store
+# For source builds, exclude the host output to prevent stale artefacts.
+# Remove this entry when intentionally packaging prebuilt dist/ output.
+dist

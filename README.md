@@ -8,6 +8,7 @@ supporting files that coding agents load when needed.
 | Skill | What it does |
 | --- | --- |
 | [`build123d`](skills/build123d) | Designs parametric 3D-printable parts in build123d, then measures, checks and renders them |
+| [`coolify-docker`](skills/coolify-docker) | Writes production Dockerfiles and Compose, configures Coolify Applications and shareable Services, and verifies deployments |
 | [`git-commit`](skills/git-commit) | Writes Conventional Commit messages that follow the repository's conventions |
 
 ## Install with Skillshare
