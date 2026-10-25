@@ -9,6 +9,7 @@ supporting files that coding agents load when needed.
 | --- | --- |
 | [`build123d`](skills/build123d) | Designs parametric 3D-printable parts in build123d, then measures, checks and renders them |
 | [`git-commit`](skills/git-commit) | Writes Conventional Commit messages that follow the repository's conventions |
+| [`pixel-art-extraction`](skills/pixel-art-extraction) | Recovers logical pixel grids from sprites, charts and photographs, with confidence reports and canonical data |
 
 ## Install with Skillshare
 
