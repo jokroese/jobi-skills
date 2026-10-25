@@ -1,127 +1,117 @@
 # jobi-skills
 
-Portable [Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
-— reusable instructions that any AI coding agent can load on demand.
-
-A skill is a folder with a `SKILL.md` in it. That is the whole format. Claude
-Code, Codex CLI, Gemini CLI, Cursor, Copilot and around thirty other tools read
-it unchanged, so nothing here is tied to a single vendor.
+Portable [Agent Skills](https://agentskills.io): reusable instructions and
+supporting files that coding agents load when needed.
 
 ## Skills
 
-| Skill                             | What it does                                                                                          |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| [`build123d`](skills/build123d)   | Designs parametric 3D-printable parts in build123d, then runs the model to measure, check and render it |
-| [`git-commit`](skills/git-commit) | Writes a Conventional Commits message for staged work, matching the conventions the repo already uses |
+| Skill | What it does |
+| --- | --- |
+| [`build123d`](skills/build123d) | Designs parametric 3D-printable parts in build123d, then measures, checks and renders them |
+| [`git-commit`](skills/git-commit) | Writes Conventional Commit messages that follow the repository's conventions |
 
-## Using these skills
+## Install with Skillshare
 
-Every agent looks for skills in its own directory — `~/.claude/skills`,
-`~/.codex/skills`, and so on. Same files, different lookup path. The install
-script symlinks each skill into every agent it finds, so there is one copy on
-disk and nothing to keep in sync:
+[Skillshare](https://github.com/runkids/skillshare) manages skill selection and
+links. This repository stays the editable source; plugin packaging and the
+previous custom installer are no longer supported.
 
-```bash
+```sh
+brew install skillshare
 git clone https://github.com/jokroese/jobi-skills.git
 cd jobi-skills
-./scripts/install.sh
 ```
 
-It detects which agents you have installed, links skills one by one so anything
-already in those directories is left alone, backs up real directories rather
-than overwriting them, and is safe to run again after you pull.
+Use a long-lived checkout as the source. Keep machine-specific installation
+settings in `~/.config/skillshare/config.yaml`. The
+[example configuration](examples/skillshare/config.yaml) selects the two
+committed skills for the shared agent directory and Claude Code.
 
-```bash
-./scripts/install.sh --dry-run                 # show what would happen
-./scripts/install.sh --target ~/proj/.claude/skills   # somewhere specific
-./scripts/install.sh --uninstall               # remove links to this repo
+If you do not already have a Skillshare configuration:
+
+```sh
+mkdir -p ~/.config/skillshare
+# Refuse to overwrite existing settings.
+test ! -e ~/.config/skillshare/config.yaml &&
+  cp examples/skillshare/config.yaml ~/.config/skillshare/config.yaml
 ```
 
-Because the links point at the repo, `git pull` updates every agent at once.
+Edit the copied configuration: replace `source` with the absolute path to this
+checkout's `skills/` directory and choose the targets and `include` lists you
+want. If you already use Skillshare, integrate this source and selection with
+your existing setup instead of replacing its configuration.
 
-Most agents scan their skills directories at startup, so **restart anything
-that was already running**.
+Use **merge** mode: it links each selected skill separately and preserves
+independent local folders. Skillshare's mode named `symlink` links the whole
+directory and ignores selection filters.
 
-### Where each agent looks
-
-| Agent | Personal skills | Notes |
-|-------|-----------------|-------|
-| Claude Code | `~/.claude/skills` | |
-| Codex CLI | `~/.codex/skills` | also reads `.codex/skills` per project |
-| Gemini CLI | `~/.gemini/skills` | |
-| GitHub Copilot | `~/.copilot/skills` | |
-| OpenCode | `~/.config/opencode/skills` | also reads `~/.claude/skills` and `~/.agents/skills` |
-| Cursor | — | project only: `.cursor/skills` |
-
-For anything not listed, or for project-scoped installs:
-
-```bash
-./scripts/install.sh --target ~/my-project/.cursor/skills
+```sh
+skillshare sync -g --dry-run
+skillshare sync -g
+skillshare status -g
+skillshare diff -g
 ```
 
-`~/.agents/skills` is the vendor-neutral location some tools read. The script
-links there if `~/.agents` exists.
+`-g` selects your global configuration even inside a repository with a
+project-level Skillshare configuration. Review the dry-run targets before
+applying. A conflicting real directory is preserved; compare it with the
+source and back it up before replacing it. Avoid `--force` as a shortcut.
 
-### Claude Code
+Use `~/.agents/skills` as the shared default: it is the documented user location
+for [Codex](https://learn.chatgpt.com/docs/build-skills) and is supported by
+[Copilot CLI](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference#skill-locations)
+and [OpenCode](https://opencode.ai/docs/skills/). This is a shared discovery
+convention; the [Agent Skills specification](https://agentskills.io/specification)
+defines the package format rather than a universal installation directory.
+[Claude Code](https://code.claude.com/docs/en/skills#choose-where-skills-load)
+documents `~/.claude/skills`, so retain that compatibility target, linked to
+the same source files. Tools that read several
+locations can still encounter overlaps; avoid adding redundant provider-specific
+targets for the same skills. These settings cover local skill discovery, not
+account-level uploads or plugin-only application surfaces.
 
-Symlinks in `~/.claude/skills` work, but installing as a plugin keeps it
-updatable. From the Claude Code prompt, in any directory:
+For an existing installation, follow the
+[migration notes](docs/skillshare-migration.md) before removing old links or
+uninstalling plugins.
 
-```
-/plugin marketplace add jokroese/jobi-skills
-/plugin install jobi-skills
-```
+## Keeping skills current
 
-### Claude Desktop and Cowork
+- Edit existing skills in `skills/`. Linked files change immediately on disk;
+  no sync is needed for content edits.
+- After adding, renaming or removing skills, or changing target selection,
+  update the intended `include` lists and run `skillshare sync -g --dry-run`,
+  then `skillshare sync -g`.
+- After pulling repository changes, sync to reconcile additions and removals.
+- Start a fresh agent chat to verify changed instructions. An existing chat
+  may already have loaded an earlier version.
 
-These do **not** read `~/.claude/skills` — that path is Claude Code (the CLI),
-and `/plugin` is a Claude Code command, not a desktop one. The desktop app
-loads skills from installed plugins and from skills saved to your account.
-Install through the UI:
-
-1. Open the **Cowork** tab, then **Customize** in the left sidebar
-2. Go to **Plugins**
-3. Under **Personal plugins**, click **+** → **Add marketplace**
-4. Enter `jokroese/jobi-skills`
-5. Install the `jobi-skills` plugin, then start a new session
-
-### Without the script
-
-Nothing depends on the installer. Copy `skills/git-commit/` wherever your agent
-looks for skills and it will work — you just take on keeping the copy current.
-
-### As a plugin
-
-`.claude-plugin/` holds the metadata that lets Claude Code and Cowork install
-this repo with `/plugin marketplace add` (see above). Other agents ignore those
-files — additive metadata, not a dependency.
+Skillshare does not need to run in the background for linked content edits.
+Use normal Git commands for this authoring repository. Skillshare's upstream
+update commands are for imported skills with tracked upstream metadata.
 
 ## Adding a skill
 
-```
+```text
 skills/<skill-name>/
-├── SKILL.md          # required — frontmatter + instructions
-├── references/       # detail loaded only when needed
-├── scripts/          # deterministic steps, so the model doesn't improvise them
-├── assets/           # templates and files that end up in the output
+├── SKILL.md          # frontmatter and instructions
+├── references/       # detail loaded when needed
+├── scripts/          # deterministic helpers
+├── assets/           # templates and output resources
 └── evals/evals.json  # test prompts and assertions
 ```
 
-`SKILL.md` needs YAML frontmatter with `name` and `description`. The
-description is the only thing an agent sees before deciding whether to load the
-skill, so it should name concrete triggers rather than describe the skill in
-the abstract.
-
-`AGENTS.md` has the full house style — read it before writing one, or point
-your agent at it.
+`SKILL.md` needs `name` and `description` in YAML frontmatter. Describe concrete
+triggers in `description`, because agents use it to decide when to load the
+skill. See [AGENTS.md](AGENTS.md) for the writing and synchronisation workflow.
 
 Validate before committing:
 
-```bash
+```sh
 python3 scripts/validate.py
 ```
 
-CI runs the same check on every push.
+CI validates the skills and checks bundled shell scripts. Skillshare itself is
+maintained upstream; this repo does not implement another installation manager.
 
 ## Licence
 
