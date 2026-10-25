@@ -92,6 +92,39 @@ Three levels, and knowing which is which keeps context lean:
 
 Anything that isn't needed on every invocation belongs at level 3.
 
+## Keep local installations in sync
+
+Use Skillshare for local installation. The editable source remains `skills/`;
+read `~/.config/skillshare/config.yaml` to identify the configured source,
+targets and selection before changing installations. Prefer the shared
+`~/.agents/skills` target for agents that support it. Add a provider-specific
+target only when its documented discovery paths require one, such as
+`~/.claude/skills` for Claude Code; link it to the same source to prevent
+versions diverging.
+
+After adding, renaming or removing skills, changing the intended selection,
+or pulling changes that affect the skill set:
+
+1. Update the relevant `include` lists when the requested availability changes.
+   Do not enable every draft merely because its folder exists.
+2. Confirm that the configured source contains the changes being installed.
+   Global links should point at the long-lived checkout. Do not repoint them
+   to a temporary task worktree: its removal would break the installation.
+3. Run `skillshare sync -g --dry-run`, inspect the affected targets, then run
+   `skillshare sync -g` when the plan matches the requested change.
+4. Check `skillshare status -g` and `skillshare diff -g`. Verify changed
+   instructions in a fresh agent chat when runtime behaviour matters.
+
+Content-only edits to linked skills need no sync because the target reads the
+same files. For unmerged worktree changes, use an isolated trial configuration
+as needed; syncing the main checkout cannot install edits from another tree.
+
+Preserve unrelated skills and compare conflicting real directories before
+replacing them. Avoid broad force/uninstall operations: `skillshare uninstall`
+removes source skills. Keep this repository free of plugin wrappers and
+marketplace manifests; the supported delivery path is direct skills through
+Skillshare. See `README.md` for initial setup.
+
 ## Before committing
 
 ```bash
