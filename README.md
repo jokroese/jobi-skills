@@ -9,6 +9,7 @@ supporting files that coding agents load when needed.
 | --- | --- |
 | [`build123d`](skills/build123d) | Designs parametric 3D-printable parts in build123d, then measures, checks and renders them |
 | [`git-commit`](skills/git-commit) | Writes Conventional Commit messages that follow the repository's conventions |
+| [`normalise-to-markdown`](skills/normalise-to-markdown) | Reconstructs Markdown structure from OCR or pasted text without rewriting its content |
 
 ## Install with Skillshare
 
